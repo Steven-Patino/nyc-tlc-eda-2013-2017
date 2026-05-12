@@ -1,0 +1,31 @@
+# Entornos y caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Configuracion local
+.env
+
+# Datos pesados
+*.parquet
+*.csv
+
+raw_datasets/*
+!raw_datasets/.gitkeep
+
+datasets/*
+!datasets/.gitkeep
+
+outputs/*
+!outputs/.gitkeep
+
+# Notebooks/checkpoints locales
+.ipynb_checkpoints/
+
+# Sistema operativo / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
