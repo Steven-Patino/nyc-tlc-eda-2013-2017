@@ -1,107 +1,79 @@
-import pyarrow.parquet as pq
-import pyarrow.compute as pc
-import pyarrow as pa
+import dask.dataframe as dd
+from dask.diagnostics import ProgressBar
+import dask
 from pathlib import Path
-import sys
-import gc
 import pandas as pd
+import time
+import os
+
+# --- CONFIGURACIÓN DE ESTABILIDAD ---
+# Forzamos ejecución secuencial para evitar picos de RAM en VS Code
+dask.config.set(scheduler='synchronous') 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FINAL_DATA_DIR = PROJECT_ROOT / 'outputs' / 'final_datasets'
 
-def imprimir_progreso(actual, total, prefijo=''):
-    ancho = 30
-    progresion = int(actual / total * ancho)
-    barra = f"[{'█' * progresion}{'.' * (ancho - progresion)}]"
-    sys.stdout.write(f"\r{prefijo} {barra} {actual/total:>4.1%}")
-    sys.stdout.flush()
-
-def auditar_dataset(nombre_archivo: str):
+def auditar_dataset_ligero(nombre_archivo: str):
     ruta = FINAL_DATA_DIR / nombre_archivo
     if not ruta.exists():
-        print(f"❌ No se encuentra: {nombre_archivo}")
+        print(f"\n❌ No se encuentra el archivo: {nombre_archivo}")
         return
 
     print(f"\n{'='*80}")
-    print(f"🔍 AUDITORÍA DE INTEGRIDAD: {nombre_archivo}")
+    print(f"🔍 AUDITORÍA ESENCIAL (SIN DUPLICADOS): {nombre_archivo}")
     print(f"{'='*80}")
 
-    parquet_file = pq.ParquetFile(ruta)
-    total_filas = parquet_file.metadata.num_rows
-    schema = parquet_file.schema_arrow
+    # Carga perezosa del dataset
+    ddf = dd.read_parquet(ruta)
+    
+    # --- 1. CONTEO TOTAL ---
+    print(f"⏳ Calculando volumen de filas...")
+    with ProgressBar():
+        total_filas = len(ddf)
     
     print(f"📈 Filas totales: {total_filas:,}")
     print(f"📂 Tamaño en disco: {ruta.stat().st_size / (1024**3):.2f} GB")
 
-    # --- 1. ANÁLISIS DE NULOS ---
-    print(f"\n❓ ANÁLISIS DE VALORES NULOS (Columna por Columna):")
-    for i, col_name in enumerate(schema.names, 1):
-        imprimir_progreso(i, len(schema.names), f"   Validando columnas")
-        col_data = pq.read_table(ruta, columns=[col_name]).column(0)
-        validos = pc.count(col_data).as_py()
-        nulos = total_filas - validos
+    # --- 2. ANÁLISIS DE VALORES NULOS ---
+    # Lo hacemos columna por columna para máxima seguridad de memoria
+    print(f"\n❓ ANALIZANDO NULOS (Modo secuencial):")
+    for col in ddf.columns:
+        # Solo leemos la columna necesaria en cada iteración
+        nulos = ddf[col].isnull().sum().compute()
         porcentaje = (nulos / total_filas) * 100
-        # Guardamos el resultado para imprimirlo después de la barra
-        sys.stdout.write(f" -> {col_name}: {nulos:,} ({porcentaje:.2f}%)\n")
-        del col_data
-        gc.collect()
+        status = "⚠️" if nulos > 0 else "✅"
+        print(f"   {status} {col}: {nulos:,} ({porcentaje:.2f}%)")
 
-    # --- 2. ANÁLISIS DE RANGO TEMPORAL ---
-    print(f"\n📅 ANÁLISIS DE RANGO TEMPORAL (2013-2017):")
+    # --- 3. ANÁLISIS DE RANGO TEMPORAL ---
     posibles_fechas = ['tpep_pickup_datetime', 'lpep_pickup_datetime', 'pickup_datetime']
-    col_fecha = [c for c in schema.names if c in posibles_fechas]
+    col_fecha = [c for c in ddf.columns if c in posibles_fechas]
     
     if col_fecha:
         f_name = col_fecha[0]
-        table_fecha = pq.read_table(ruta, columns=[f_name])
+        print(f"\n📅 VERIFICANDO RANGO TEMPORAL (2013-2017) en '{f_name}':")
+        f_min = pd.Timestamp('2013-01-01')
+        f_max = pd.Timestamp('2017-12-31 23:59:59')
         
-        # Filtros
-        f_min = pa.scalar(pd.Timestamp('2013-01-01'), type=table_fecha.column(0).type)
-        f_max = pa.scalar(pd.Timestamp('2017-12-31 23:59:59'), type=table_fecha.column(0).type)
+        with ProgressBar():
+            # Filtro directo sobre la columna de fecha
+            fuera_rango = ddf[(ddf[f_name] < f_min) | (ddf[f_name] > f_max)].shape[0].compute()
         
-        fuera_rango = pc.sum(pc.or_(
-            pc.less(table_fecha.column(0), f_min),
-            pc.greater(table_fecha.column(0), f_max)
-        )).as_py()
-        
-        print(f"   - Columna: {f_name}")
-        print(f"   - Fuera de rango (2013-2017): {fuera_rango:,} ({ (fuera_rango/total_filas):.4%})")
-        del table_fecha
-    gc.collect()
-
-    # --- 3. ANÁLISIS DE DUPLICADOS (Hashing optimizado) ---
-    print(f"\n👥 ANÁLISIS DE DUPLICADOS:")
-    seen_hashes = set()
-    duplicados_detectados = 0
-    batch_size = 500_000
-    filas_procesadas = 0
-
-    for batch in parquet_file.iter_batches(batch_size=batch_size):
-        df_batch = batch.to_pandas()
-        hashes = pd.util.hash_pandas_object(df_batch, index=False)
-        
-        for h in hashes:
-            if h in seen_hashes:
-                duplicados_detectados += 1
-            else:
-                seen_hashes.add(h)
-        
-        filas_procesadas += len(batch)
-        imprimir_progreso(filas_procesadas, total_filas, "   Escaneando filas")
-        
-        # Límite de seguridad para RAM (15 millones de registros únicos)
-        if len(seen_hashes) > 15_000_000:
-            print(f"\n   ⚠️ Límite de RAM alcanzado (Muestra de 15M única finalizada).")
-            break
-            
-    print(f"\n   - Total duplicados detectados en la muestra: {duplicados_detectados:,}")
-    del seen_hashes
-    gc.collect()
+        print(f"   - Registros fuera de rango: {fuera_rango:,} ({fuera_rango/total_filas:.4%})")
 
 def main():
+    # Lista de archivos a auditar
     servicios = ['yellow_taxi.parquet', 'green_taxi.parquet', 'for_hire_vehicle.parquet']
+    
+    tiempo_inicio = time.time()
+    
     for servicio in servicios:
-        auditar_dataset(servicio)
+        auditar_dataset_ligero(servicio)
+        print(f"\n✅ Auditoría de {servicio} completada.")
+    
+    print(f"\n{'='*80}")
+    print(f"🏁 PROCESO FINALIZADO")
+    print(f"⏱️ Tiempo total: {(time.time() - tiempo_inicio)/60:.2f} minutos")
+    print(f"{'='*80}")
 
 if __name__ == "__main__":
     main()

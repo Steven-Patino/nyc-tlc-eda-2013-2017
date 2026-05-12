@@ -17,6 +17,8 @@ El flujo actual valida archivos Parquet crudos, unifica datasets mensuales por a
 | ✅ Unificacion por carpeta | Completada | 1,178,940,829 filas procesadas |
 | 🔎 Validación por servicio | Completada | Se detectaron inconsistencias de tipo en columnas homónimas |
 | 🔄 Unificación final por servicio | Completada | Datasets normalizados y consolidados en outputs/final_datasets |
+| 🧪 Auditoría de calidad | Completada | `scripts/check_data_integrity.py` corrió con éxito, verificó rangos temporales y nulos, y quedó documentada en `docs/Concluciones/from_check_data_integrity.md` |
+| 🔍 Análisis de duplicados | Pendiente | Buscar alternativa para medir duplicados sin colapsar la RAM |
 | 🧩 Configuracion replicable | Lista | Scripts configurables desde `.env` |
 | 📊 EDA y visualizaciones | Lista | Datasets finales en outputs/final_datasets |
 
@@ -37,6 +39,20 @@ El flujo actual valida archivos Parquet crudos, unifica datasets mensuales por a
 - Espacio en disco suficiente para datos crudos y salidas unificadas
 
 Las dependencias estan en `pyproject.toml` y se instalan con `uv sync`.
+
+## 📦 Dependencias
+
+Este proyecto utiliza las siguientes librerías adicionales para manejo y análisis de datos masivos en Parquet:
+
+- `dask>=2026.3.0`: procesamiento en paralelo y por chunks para evitar saturar la memoria con datasets enormes.
+- `fastparquet>=2026.3.0`: lectura/escritura eficiente de Parquet en combinación con Dask.
+- `pyarrow>=24.0.0`: compatibilidad y rendimiento adicional para formatos de columna y consultas de Parquet.
+- `pandas>=3.0.3`: manipulación de datos tabulares y esquema en los pasos de validación y unificación.
+- `numpy>=2.4.4`: soporte numérico y operaciones vectorizadas para cálculos de volumen y filtros.
+- `python-dotenv>=1.2.2`: carga de variables de entorno desde `.env` para hacer el proyecto configurable.
+- `matplotlib>=3.10.9` y `seaborn>=0.13.2`: visualización de resultados cuando se generan gráficos de análisis exploratorio.
+
+Estas librerías se añadieron para garantizar que el proyecto pueda procesar y auditar grandes volúmenes de Parquet de forma robusta y reproducible.
 
 ## 🚀 Instalacion en Windows
 
@@ -220,6 +236,7 @@ La carpeta `outputs/` preserva su estructura mediante archivos `.gitkeep`; los r
 | `scripts/validation_per_service.py` | Valida que los mismos servicios entre años compartan columnas y tipos de datos consistentes |
 | `scripts/unification_per_folder.py` | Unifica archivos mensuales por anio/servicio usando batches para cuidar la RAM |
 | `scripts/final_unification_per_services.py` | Unifica datasets consolidados por servicio aplicando normalización de esquemas |
+| `scripts/check_data_integrity.py` | Audita integridad del dataset final sin duplicados, verifica nulos y rango temporal |
 
 ## 🧠 Notas de memoria
 
@@ -245,6 +262,8 @@ La documentación general del proyecto se concentra en el README principal y en 
 - `docs/Concluciones/from_validation_per_services.md`
 - `docs/Concluciones/from_final_unification_per_services.md`
 - `docs/Concluciones/from_unification_per_folder.md`
+- `docs/Concluciones/from_check_data_integrity.md`  
+  _(Auditoría de nulos y rango temporal para los datasets finales)_
 
 ## 👨‍💻 Autor
 
