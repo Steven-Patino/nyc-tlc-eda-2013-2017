@@ -1,8 +1,12 @@
-# Guia de procesamiento
+# 🧭 Guia de procesamiento
+
+![uv](https://img.shields.io/badge/uv-sync-6C47FF)
+![Config](https://img.shields.io/badge/config-.env-yellow)
+![Parquet](https://img.shields.io/badge/data-Parquet-0A7EA4)
 
 Esta guia describe el flujo actual para validar y unificar los datos Parquet de NYC TLC 2013-2017.
 
-## 1. Preparar entorno
+## 1. 🧰 Preparar entorno
 
 ```powershell
 cd EDA_2013_to_2017
@@ -15,7 +19,7 @@ Opcionalmente activa el entorno:
 .\.venv\Scripts\Activate.ps1
 ```
 
-## 2. Configurar rutas
+## 2. ⚙️ Configurar rutas
 
 Los scripts cargan automaticamente un archivo `.env` ubicado en la raiz del proyecto.
 
@@ -48,7 +52,7 @@ raw_datasets
 outputs/new_datasets
 ```
 
-## 3. Estructura esperada
+## 3. 📥 Estructura esperada
 
 ```text
 raw_datasets/
@@ -66,7 +70,7 @@ raw_datasets/
   2017/yellow_taxi/*.parquet
 ```
 
-## 4. Validar datos crudos
+## 4. 🔍 Validar datos crudos
 
 ```powershell
 uv run python .\scripts\validation_per_folder.py
@@ -81,7 +85,7 @@ La validacion revisa:
 
 No carga los datasets completos en memoria.
 
-## 5. Unificar datasets
+## 5. 📦 Unificar datasets
 
 ```powershell
 uv run python .\scripts\unification_per_folder.py
@@ -101,7 +105,7 @@ El proceso:
 - Procesa datos por batches con `iter_batches`.
 - Escribe salida comprimida con Snappy.
 
-## 6. Ajuste de memoria
+## 6. 🧠 Ajuste de memoria
 
 La variable `NYC_TLC_BATCH_SIZE` controla cuantas filas se procesan por batch.
 
@@ -117,7 +121,7 @@ Para equipos con mas RAM:
 NYC_TLC_BATCH_SIZE=500000
 ```
 
-## 7. Resultado actual
+## 7. 📊 Resultado actual
 
 La ejecucion final de unificacion proceso:
 
@@ -128,7 +132,7 @@ La ejecucion final de unificacion proceso:
 | Green Taxi | 63,193,374 |
 | **Total** | **1,178,940,829** |
 
-## 8. Archivos que no deben subirse a Git
+## 8. 🚫 Archivos que no deben subirse a Git
 
 El proyecto ignora:
 

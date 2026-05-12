@@ -11,10 +11,13 @@ import pyarrow.parquet as pq
 
 DEFAULT_BATCH_SIZE = 250_000
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# Carga configuracion local sin exponer rutas personales en el repositorio.
 load_dotenv(PROJECT_ROOT / '.env')
 
 
 def get_env_path(env_name: str, default: Path) -> Path:
+    """Lee una ruta desde .env y permite valores relativos al proyecto."""
     value = os.environ.get(env_name)
     if value:
         path = Path(value).expanduser()
@@ -25,6 +28,7 @@ def get_env_path(env_name: str, default: Path) -> Path:
 
 
 def get_batch_size() -> int:
+    """Obtiene el tamano de lote usado para controlar consumo de RAM."""
     value = os.environ.get('NYC_TLC_BATCH_SIZE')
     if not value:
         return DEFAULT_BATCH_SIZE
@@ -58,6 +62,7 @@ def unify_types(type1: pa.DataType, type2: pa.DataType) -> pa.DataType:
     if pa.types.is_null(type2):
         return type1
 
+    # Promueve tipos numericos al tipo mas amplio para evitar perdida de datos.
     type_hierarchy = {
         pa.null(): 0,
         pa.int8(): 1,
@@ -85,6 +90,7 @@ def unify_schemas(schemas: List[pa.Schema]) -> pa.Schema:
     if not schemas:
         return pa.schema([])
 
+    # Acumula cada columna normalizada con su tipo final y nulabilidad.
     fields_by_name = {}
 
     for schema in schemas:
@@ -118,6 +124,7 @@ def align_table_to_schema(table: pa.Table, unified_schema: pa.Schema) -> pa.Tabl
     """Ajusta nombres, columnas faltantes y tipos al esquema unificado."""
     normalized_columns = {}
 
+    # Evita duplicados por diferencias de casing, por ejemplo VendorID/vendorid.
     for index, original_name in enumerate(table.column_names):
         normalized_name = normalize_column_name(original_name)
         if normalized_name not in normalized_columns:
@@ -126,6 +133,7 @@ def align_table_to_schema(table: pa.Table, unified_schema: pa.Schema) -> pa.Tabl
     aligned_columns = []
     for field in unified_schema:
         if field.name not in normalized_columns:
+            # Si un mes no trae una columna, se rellena con nulls tipados.
             aligned_columns.append(pa.nulls(table.num_rows, type=field.type))
             continue
 
@@ -175,6 +183,7 @@ def unify_folder(ruta_carpeta: str, ruta_salida_base: str) -> dict:
                     'mensaje': f'Error leyendo esquema de {archivo.name}: {exc}',
                 }
 
+        # El writer necesita un esquema unico antes de empezar a escribir.
         unified_schema = unify_schemas(all_schemas)
         print(f"🧱 Esquema unificado creado con {len(unified_schema)} columnas")
         print(f"📚 Columnas finales: {unified_schema.names}")
@@ -201,6 +210,7 @@ def unify_folder(ruta_carpeta: str, ruta_salida_base: str) -> dict:
                     )
 
                     filas_archivo = 0
+                    # Procesar por batches evita cargar archivos completos en RAM.
                     for batch_idx, record_batch in enumerate(
                         parquet_file.iter_batches(
                             batch_size=batch_size,

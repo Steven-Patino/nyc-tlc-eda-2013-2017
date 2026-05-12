@@ -1,17 +1,21 @@
-# EDA NYC TLC 2013-2017
+# 🚕 EDA NYC TLC 2013-2017
 
-## Descripcion
+![Python](https://img.shields.io/badge/Python-3.13+-3776AB)
+![Status](https://img.shields.io/badge/status-processing%20ready-2EA44F)
+![Dataset](https://img.shields.io/badge/dataset-NYC%20TLC-orange)
+
+## 📌 Descripcion
 
 Este proyecto prepara una base de datos historica de viajes de NYC TLC para analisis exploratorio. El periodo cubierto es 2013-2017 e incluye Yellow Taxi, Green Taxi y For-Hire Vehicle.
 
-## Objetivos
+## 🎯 Objetivos
 
 - Validar la integridad estructural de los archivos Parquet.
 - Unificar archivos mensuales por anio y servicio.
 - Mantener un flujo replicable con `uv` y variables de entorno.
 - Preparar datos consolidados para EDA, visualizaciones y reportes.
 
-## Estado del proyecto
+## 🧩 Estado del proyecto
 
 | Fase | Estado |
 |---|---|
@@ -21,7 +25,7 @@ Este proyecto prepara una base de datos historica de viajes de NYC TLC para anal
 | Analisis exploratorio | Pendiente |
 | Visualizaciones | Pendiente |
 
-## Cobertura de datos
+## 🗓️ Cobertura de datos
 
 | Anio | Yellow Taxi | Green Taxi | For-Hire Vehicle |
 |---|:---:|:---:|:---:|
@@ -31,7 +35,7 @@ Este proyecto prepara una base de datos historica de viajes de NYC TLC para anal
 | 2016 | Si | Si | Si |
 | 2017 | Si | Si | Si |
 
-## Volumen consolidado
+## 📊 Volumen consolidado
 
 | Servicio | Filas totales | Porcentaje |
 |---|---:|---:|
@@ -40,7 +44,7 @@ Este proyecto prepara una base de datos historica de viajes de NYC TLC para anal
 | Green Taxi | 63,193,374 | 5.4% |
 | **Total** | **1,178,940,829** | **100%** |
 
-## Estructura principal
+## 🗂️ Estructura principal
 
 ```text
 EDA_2013_to_2017/
@@ -57,7 +61,7 @@ EDA_2013_to_2017/
   outputs/            # local, ignorado por Git
 ```
 
-## Configuracion
+## ⚙️ Configuracion
 
 Los scripts cargan estas variables desde el archivo `.env` local:
 
@@ -67,7 +71,7 @@ Los scripts cargan estas variables desde el archivo `.env` local:
 | `NYC_TLC_OUTPUT_DIR` | Ruta de salida para datos unificados |
 | `NYC_TLC_BATCH_SIZE` | Filas por batch durante unificacion |
 
-## Tecnologia
+## 🛠️ Tecnologia
 
 - Python 3.13+
 - uv
@@ -78,7 +82,7 @@ Los scripts cargan estas variables desde el archivo `.env` local:
 - Seaborn
 - Fastparquet
 
-## Referencia
+## 🔗 Referencia
 
 Datos publicos de NYC Taxi and Limousine Commission:
 

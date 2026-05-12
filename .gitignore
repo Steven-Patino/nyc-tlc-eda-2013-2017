@@ -12,14 +12,17 @@ __pycache__/
 *.parquet
 *.csv
 
-raw_datasets/*
-!raw_datasets/.gitkeep
+raw_datasets/**
+!raw_datasets/**/
+!raw_datasets/**/*.md
 
-datasets/*
-!datasets/.gitkeep
+datasets/**
+!datasets/**/
+!datasets/**/*.md
 
-outputs/*
-!outputs/.gitkeep
+outputs/**
+!outputs/**/
+!outputs/**/*.md
 
 # Notebooks/checkpoints locales
 .ipynb_checkpoints/

@@ -6,10 +6,13 @@ import pyarrow.parquet as pq
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# Carga rutas locales desde .env sin versionar informacion del equipo.
 load_dotenv(PROJECT_ROOT / ".env")
 
 
 def get_env_path(env_name: str, default: Path) -> Path:
+    """Lee rutas desde .env y soporta valores relativos al proyecto."""
     value = os.environ.get(env_name)
     if value:
         path = Path(value).expanduser()
@@ -48,6 +51,7 @@ def validar_carpeta(ruta_carpeta: str) -> dict:
 
     for archivo in archivos:
         try:
+            # ParquetFile lee metadatos/esquema sin cargar todo el dataset.
             parquet_file = pq.ParquetFile(archivo)
             columnas_actuales = parquet_file.schema_arrow.names
             filas_estimadas += parquet_file.metadata.num_rows
@@ -65,6 +69,7 @@ def validar_carpeta(ruta_carpeta: str) -> dict:
                 errores_encontrados += 1
                 print(f"❌ {archivo.name}: diferencias detectadas")
 
+                # Separamos faltantes/sobrantes para diagnosticar diferencias.
                 set_ref = set(columnas_referencia)
                 set_act = set(columnas_actuales)
 
@@ -122,6 +127,7 @@ def validar_datasets_completo(ruta_base: str) -> None:
     carpetas_validas = 0
     carpetas_invalidas = 0
 
+    # Recorre los anios disponibles; no asume que todos existan.
     for year_dir in sorted([d for d in ruta_base.iterdir() if d.is_dir()]):
         print(f"\n{'█' * 78}")
         print(f"📅 ANIO: {year_dir.name}")
