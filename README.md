@@ -3,7 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.13+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![uv](https://img.shields.io/badge/uv-managed-6C47FF?style=for-the-badge)
 ![Parquet](https://img.shields.io/badge/Data-Parquet-0A7EA4?style=for-the-badge)
-![Status](https://img.shields.io/badge/Status-Processing%20Ready-2EA44F?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-EDA%20Ready-2EA44F?style=for-the-badge)
 
 Proyecto de analisis exploratorio y preparacion de datos masivos de la **NYC Taxi and Limousine Commission (TLC)** para el periodo **2013-2017**.
 
@@ -18,7 +18,7 @@ El flujo actual valida archivos Parquet crudos, unifica datasets mensuales por a
 | 🔎 Validación por servicio | Completada | Se detectaron inconsistencias de tipo en columnas homónimas |
 | 🔄 Unificación final por servicio | Completada | Datasets normalizados y consolidados en outputs/final_datasets |
 | 🧩 Configuracion replicable | Lista | Scripts configurables desde `.env` |
-| 📊 EDA y visualizaciones | Pendiente | Siguiente fase del proyecto |
+| 📊 EDA y visualizaciones | Lista | Datasets finales en outputs/final_datasets |
 
 ## 📊 Volumen procesado
 
@@ -39,6 +39,14 @@ El flujo actual valida archivos Parquet crudos, unifica datasets mensuales por a
 Las dependencias estan en `pyproject.toml` y se instalan con `uv sync`.
 
 ## 🚀 Instalacion en Windows
+
+Instalar `uv`:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Clonar e instalar:
 
 ```powershell
 git clone https://github.com/Steven-Patino/nyc-tlc-eda-2013-2017.git
@@ -188,6 +196,20 @@ outputs/new_datasets/2017/green_taxi.parquet
 outputs/new_datasets/2017/for_hire_vehicle.parquet
 ```
 
+Al ejecutar `scripts/final_unification_per_services.py`, los datasets finales normalizados se escriben en:
+
+```text
+outputs/final_datasets/{servicio}.parquet
+```
+
+Ejemplos:
+
+```text
+outputs/final_datasets/yellow_taxi.parquet
+outputs/final_datasets/green_taxi.parquet
+outputs/final_datasets/for_hire_vehicle.parquet
+```
+
 La carpeta `outputs/` preserva su estructura mediante archivos `.gitkeep`; los resultados pesados se mantienen fuera de Git.
 
 ## 🧪 Scripts principales
@@ -221,7 +243,7 @@ La documentación general del proyecto se concentra en el README principal y en 
 - `docs/Documentacion_general/DATA_DICTIONARY.md`
 - `docs/Concluciones/from_validaction_per_folder.md`
 - `docs/Concluciones/from_validation_per_services.md`
-- `docs/Concluciones/final_unification_per_services.md`
+- `docs/Concluciones/from_final_unification_per_services.md`
 - `docs/Concluciones/from_unification_per_folder.md`
 
 ## 👨‍💻 Autor
