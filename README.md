@@ -144,7 +144,7 @@ raw_datasets/
     yellow_taxi/
 ```
 
-Las carpetas ya existen en el repositorio con archivos guia como `DATA_LAYOUT.md` y `PLACE_PARQUET_HERE.md` para mostrar la arquitectura. Los archivos `.parquet` no se suben a GitHub por su tamano.
+Las carpetas de datos y resultados se preservan en el repositorio mediante archivos `.gitkeep`; los datos Parquet crudos y consolidados no se suben a GitHub por su tamaño.
 
 ## 📤 Donde quedan los resultados
 
@@ -162,7 +162,7 @@ outputs/new_datasets/2017/green_taxi.parquet
 outputs/new_datasets/2017/for_hire_vehicle.parquet
 ```
 
-La carpeta `outputs/` tambien esta versionada con archivos guia como `OUTPUT_LAYOUT.md`, `UNIFIED_DATASETS.md` y `EXPECTED_OUTPUTS.md`, pero los resultados pesados se mantienen fuera de Git.
+La carpeta `outputs/` preserva su estructura mediante archivos `.gitkeep`; los resultados pesados se mantienen fuera de Git.
 
 ## 🧪 Scripts principales
 
@@ -187,8 +187,8 @@ NYC_TLC_BATCH_SIZE=500000
 
 ## 📚 Documentacion
 
-- `docs/Documentacion_general/PROJECT_OVERVIEW.md`
-- `docs/Documentacion_general/PROCESSING_GUIDE.md`
+La documentación general del proyecto se concentra en el README principal y en los dos documentos centrales de `docs/Documentacion_general`. Los flujos de validación y unificación también están documentados en `docs/Concluciones/`.
+
 - `docs/Documentacion_general/DATA_SOURCES.md`
 - `docs/Documentacion_general/DATA_DICTIONARY.md`
 - `docs/Concluciones/from_validaction_per_folder.md`

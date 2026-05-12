@@ -14,12 +14,14 @@ __pycache__/
 
 raw_datasets/**
 !raw_datasets/**/
+!raw_datasets/**/*.gitkeep
 
 datasets/**
 !datasets/**/
 
 outputs/**
 !outputs/**/
+!outputs/**/*.gitkeep
 
 # Notebooks/checkpoints locales
 .ipynb_checkpoints/

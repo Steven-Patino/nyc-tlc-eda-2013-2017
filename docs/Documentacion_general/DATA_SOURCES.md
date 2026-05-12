@@ -22,7 +22,7 @@ Los archivos descargados deben ubicarse en:
 raw_datasets/{anio}/{servicio}/*.parquet
 ```
 
-La arquitectura exacta esta documentada en el README principal y en `raw_datasets/DATA_LAYOUT.md`.
+La arquitectura exacta está documentada en el README principal.
 
 ## Notas
 
