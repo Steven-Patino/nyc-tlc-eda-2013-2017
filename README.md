@@ -15,7 +15,8 @@ El flujo actual valida archivos Parquet crudos, unifica datasets mensuales por a
 |---|---|---|
 | ✅ Validacion estructural | Completada | 12/12 carpetas validas |
 | ✅ Unificacion por carpeta | Completada | 1,178,940,829 filas procesadas |
-| 🔎 Validación por servicio | En progreso | Se detectaron inconsistencias de tipo en columnas homónimas |
+| 🔎 Validación por servicio | Completada | Se detectaron inconsistencias de tipo en columnas homónimas |
+| 🔄 Unificación final por servicio | Completada | Datasets normalizados y consolidados en outputs/final_datasets |
 | 🧩 Configuracion replicable | Lista | Scripts configurables desde `.env` |
 | 📊 EDA y visualizaciones | Pendiente | Siguiente fase del proyecto |
 
@@ -64,6 +65,12 @@ Ejecutar unificacion:
 uv run python .\scripts\unification_per_folder.py
 ```
 
+Ejecutar unificación final:
+
+```powershell
+uv run python .\scripts\final_unification_per_services.py
+```
+
 ## 🐧 Instalacion en Ubuntu
 
 Instalar `uv`:
@@ -97,6 +104,12 @@ Ejecutar unificacion:
 
 ```bash
 uv run python scripts/unification_per_folder.py
+```
+
+Ejecutar unificación final:
+
+```bash
+uv run python scripts/final_unification_per_services.py
 ```
 
 ## ⚙️ Configuracion con `.env`
@@ -184,6 +197,7 @@ La carpeta `outputs/` preserva su estructura mediante archivos `.gitkeep`; los r
 | `scripts/validation_per_folder.py` | Valida esquemas Parquet por carpeta usando metadatos, sin cargar datasets completos |
 | `scripts/validation_per_service.py` | Valida que los mismos servicios entre años compartan columnas y tipos de datos consistentes |
 | `scripts/unification_per_folder.py` | Unifica archivos mensuales por anio/servicio usando batches para cuidar la RAM |
+| `scripts/final_unification_per_services.py` | Unifica datasets consolidados por servicio aplicando normalización de esquemas |
 
 ## 🧠 Notas de memoria
 
@@ -207,6 +221,7 @@ La documentación general del proyecto se concentra en el README principal y en 
 - `docs/Documentacion_general/DATA_DICTIONARY.md`
 - `docs/Concluciones/from_validaction_per_folder.md`
 - `docs/Concluciones/from_validation_per_services.md`
+- `docs/Concluciones/final_unification_per_services.md`
 - `docs/Concluciones/from_unification_per_folder.md`
 
 ## 👨‍💻 Autor
