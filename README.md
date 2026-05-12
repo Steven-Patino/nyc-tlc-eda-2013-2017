@@ -15,6 +15,7 @@ El flujo actual valida archivos Parquet crudos, unifica datasets mensuales por a
 |---|---|---|
 | ✅ Validacion estructural | Completada | 12/12 carpetas validas |
 | ✅ Unificacion por carpeta | Completada | 1,178,940,829 filas procesadas |
+| 🔎 Validación por servicio | En progreso | Se detectaron inconsistencias de tipo en columnas homónimas |
 | 🧩 Configuracion replicable | Lista | Scripts configurables desde `.env` |
 | 📊 EDA y visualizaciones | Pendiente | Siguiente fase del proyecto |
 
@@ -51,6 +52,12 @@ Ejecutar validacion:
 uv run python .\scripts\validation_per_folder.py
 ```
 
+Ejecutar validación por servicio:
+
+```powershell
+uv run python .\scripts\validation_per_service.py
+```
+
 Ejecutar unificacion:
 
 ```powershell
@@ -78,6 +85,12 @@ Ejecutar validacion:
 
 ```bash
 uv run python scripts/validation_per_folder.py
+```
+
+Ejecutar validación por servicio:
+
+```bash
+uv run python scripts/validation_per_service.py
 ```
 
 Ejecutar unificacion:
@@ -169,6 +182,7 @@ La carpeta `outputs/` preserva su estructura mediante archivos `.gitkeep`; los r
 | Script | Funcion |
 |---|---|
 | `scripts/validation_per_folder.py` | Valida esquemas Parquet por carpeta usando metadatos, sin cargar datasets completos |
+| `scripts/validation_per_service.py` | Valida que los mismos servicios entre años compartan columnas y tipos de datos consistentes |
 | `scripts/unification_per_folder.py` | Unifica archivos mensuales por anio/servicio usando batches para cuidar la RAM |
 
 ## 🧠 Notas de memoria
@@ -192,6 +206,7 @@ La documentación general del proyecto se concentra en el README principal y en 
 - `docs/Documentacion_general/DATA_SOURCES.md`
 - `docs/Documentacion_general/DATA_DICTIONARY.md`
 - `docs/Concluciones/from_validaction_per_folder.md`
+- `docs/Concluciones/from_validation_per_services.md`
 - `docs/Concluciones/from_unification_per_folder.md`
 
 ## 👨‍💻 Autor
