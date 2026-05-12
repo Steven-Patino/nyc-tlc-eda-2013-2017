@@ -14,15 +14,12 @@ __pycache__/
 
 raw_datasets/**
 !raw_datasets/**/
-!raw_datasets/**/*.md
 
 datasets/**
 !datasets/**/
-!datasets/**/*.md
 
 outputs/**
 !outputs/**/
-!outputs/**/*.md
 
 # Notebooks/checkpoints locales
 .ipynb_checkpoints/
